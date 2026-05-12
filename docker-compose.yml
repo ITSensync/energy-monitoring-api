@@ -1,0 +1,9 @@
+services:
+  api:
+    build: .
+    container_name: energy-monitoring-api
+    env_file:
+      - .env
+    ports:
+      - "3006:${PORT:-3006}"
+    restart: always
