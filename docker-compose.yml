@@ -5,5 +5,5 @@ services:
     env_file:
       - .env
     ports:
-      - "3006:${PORT:-3006}"
+      - "3007:${PORT:-3007}"
     restart: always
