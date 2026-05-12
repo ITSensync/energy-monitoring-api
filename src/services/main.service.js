@@ -12,12 +12,49 @@ const averageFields = [
   "watt3",
 ];
 
+const csvColumnMap = {
+  timestamp: "timestamp",
+  volt: "volt",
+  current_a: "current1",
+  current_b: "current2",
+  current_c: "current3",
+  watt_a: "watt1",
+  watt_b: "watt2",
+  watt_c: "watt3",
+};
+
 function toNumber(value) {
   if (value === null || value === undefined || value === "")
     return null;
 
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
+}
+
+function toDate(value) {
+  const number = toNumber(value);
+
+  if (number === null)
+    return null;
+
+  return new Date(number * 1000);
+}
+
+function normalizeRows(data) {
+  return data.map((row) => {
+    const normalizedRow = {};
+
+    for (const [csvColumn, tableColumn] of Object.entries(csvColumnMap)) {
+      if (tableColumn === "timestamp") {
+        normalizedRow[tableColumn] = toDate(row[csvColumn]);
+        continue;
+      }
+
+      normalizedRow[tableColumn] = toNumber(row[csvColumn]);
+    }
+
+    return normalizedRow;
+  });
 }
 
 function calculateAverage(data) {
@@ -42,15 +79,17 @@ async function processCsv(csvString, message) {
     skipEmptyLines: true,
   });
 
-  await MainTable.bulkCreate(dataString.data);
+  const normalizedData = normalizeRows(dataString.data);
 
-  const averageData = calculateAverage(dataString.data);
+  await MainTable.bulkCreate(normalizedData);
+
+  const averageData = calculateAverage(normalizedData);
   const average = await AverageTable.create(averageData);
 
   return {
     status: 200,
     message,
-    data: dataString.data,
+    data: normalizedData,
     average: average.toJSON(),
   };
 }
