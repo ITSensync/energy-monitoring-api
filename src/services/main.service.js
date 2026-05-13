@@ -65,33 +65,59 @@ function calculateAverage(data) {
   });
 }
 
-async function processCsv(csvString, message) {
-  console.log(JSON.stringify({ csvString }));
-  const dataString = Papa.parse(csvString, {
-    header: true,
-    skipEmptyLines: true,
-  });
+async function processCsv(csvString, successMessage, errorMessage) {
+  try {
+    // normalize newline
+    csvString = csvString.replace(/\r\n/g, "\n");
 
-  const preparedData = prepareRows(dataString.data);
+    const dataString = Papa.parse(csvString, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    });
 
-  await MainTable.bulkCreate(preparedData);
+    if (dataString.errors.length) {
+      throw new Error(dataString.errors
+        .map(error => error.message)
+        .join(", "));
+    }
 
-  const averageData = calculateAverage(preparedData);
-  const average = await AverageTable.create(averageData);
+    if (!dataString.data.length)
+      throw new Error("CSV data is empty.");
 
-  return {
-    status: 200,
-    message,
-    data: preparedData,
-    average: average.toJSON(),
-  };
+    console.log(dataString.data);
+    const preparedData = prepareRows(dataString.data);
+
+    await MainTable.bulkCreate(preparedData);
+
+    const averageData = calculateAverage(preparedData);
+    const average = await AverageTable.create(averageData);
+
+    return {
+      status: 200,
+      message: successMessage,
+      data: preparedData,
+      average: average.toJSON(),
+    };
+  }
+  catch (error) {
+    return {
+      status: 500,
+      message: errorMessage,
+      error: error.message,
+    };
+  }
 }
 
 async function insert(file) {
   try {
     const csvString = file.buffer.toString("utf-8");
 
-    return await processCsv(csvString, "File processed successfully.");
+    return await processCsv(
+      csvString,
+      "File processed successfully.",
+      "Failed to process the file.",
+    );
   }
   catch (error) {
     return {
@@ -104,7 +130,11 @@ async function insert(file) {
 
 async function insertText(text) {
   try {
-    return await processCsv(text, "Text data processed successfully.");
+    return await processCsv(
+      text,
+      "Text data processed successfully.",
+      "Failed to process the text data.",
+    );
   }
   catch (error) {
     return {
