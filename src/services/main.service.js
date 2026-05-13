@@ -60,6 +60,7 @@ function calculateAverage(data) {
 
     return result;
   }, {
+    data_count: data.length,
     machine_id: null,
     timestamp: getWibTimestamp(),
   });
@@ -85,7 +86,6 @@ async function processCsv(csvString, successMessage, errorMessage) {
     if (!dataString.data.length)
       throw new Error("CSV data is empty.");
 
-    console.log(dataString.data);
     const preparedData = prepareRows(dataString.data);
 
     await MainTable.bulkCreate(preparedData);

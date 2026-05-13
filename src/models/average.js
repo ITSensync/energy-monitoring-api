@@ -52,6 +52,11 @@ export const AverageTable = sequelize.define("average", {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
+  data_count: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+    defaultValue: 0,
+  },
 }, {
   tableName: "average",
   timestamps: false,
