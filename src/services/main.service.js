@@ -35,12 +35,11 @@ function toNumber(value) {
 
 function toDate(value) {
   const number = toNumber(value);
-  console.log(value);
 
   if (number === null)
     return null;
 
-  return new Date(number * 1000);
+  return new Date((number * 1000) + wibOffsetMs);
 }
 
 function getWibTimestamp() {
@@ -88,6 +87,7 @@ async function processCsv(csvString, message) {
   });
 
   const normalizedData = normalizeRows(dataString.data);
+  console.log(dataString.data);
 
   await MainTable.bulkCreate(normalizedData);
 
