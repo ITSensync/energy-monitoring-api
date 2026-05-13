@@ -12,17 +12,6 @@ const averageFields = [
   "watt3",
 ];
 
-const csvColumnMap = {
-  timestamp: "timestamp",
-  volt: "volt",
-  current_a: "current1",
-  current_b: "current2",
-  current_c: "current3",
-  watt_a: "watt1",
-  watt_b: "watt2",
-  watt_c: "watt3",
-};
-
 const wibOffsetMs = 7 * 60 * 60 * 1000;
 
 function toNumber(value) {
@@ -46,21 +35,17 @@ function getWibTimestamp() {
   return new Date(Date.now() + wibOffsetMs);
 }
 
-function normalizeRows(data) {
-  return data.map((row) => {
-    const normalizedRow = {};
-
-    for (const [csvColumn, tableColumn] of Object.entries(csvColumnMap)) {
-      if (tableColumn === "timestamp") {
-        normalizedRow[tableColumn] = toDate(row[csvColumn]);
-        continue;
-      }
-
-      normalizedRow[tableColumn] = toNumber(row[csvColumn]);
-    }
-
-    return normalizedRow;
-  });
+function prepareRows(data) {
+  return data.map(row => ({
+    timestamp: toDate(row.timestamp),
+    volt: toNumber(row.volt),
+    current1: toNumber(row.current1),
+    current2: toNumber(row.current2),
+    current3: toNumber(row.current3),
+    watt1: toNumber(row.watt1),
+    watt2: toNumber(row.watt2),
+    watt3: toNumber(row.watt3),
+  }));
 }
 
 function calculateAverage(data) {
@@ -81,23 +66,23 @@ function calculateAverage(data) {
 }
 
 async function processCsv(csvString, message) {
+  console.log(JSON.stringify({ csvString }));
   const dataString = Papa.parse(csvString, {
     header: true,
     skipEmptyLines: true,
   });
 
-  const normalizedData = normalizeRows(dataString.data);
-  console.log(dataString.data);
+  const preparedData = prepareRows(dataString.data);
 
-  await MainTable.bulkCreate(normalizedData);
+  await MainTable.bulkCreate(preparedData);
 
-  const averageData = calculateAverage(normalizedData);
+  const averageData = calculateAverage(preparedData);
   const average = await AverageTable.create(averageData);
 
   return {
     status: 200,
     message,
-    data: normalizedData,
+    data: preparedData,
     average: average.toJSON(),
   };
 }
