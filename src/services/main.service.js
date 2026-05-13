@@ -23,6 +23,8 @@ const csvColumnMap = {
   watt_c: "watt3",
 };
 
+const wibOffsetMs = 7 * 60 * 60 * 1000;
+
 function toNumber(value) {
   if (value === null || value === undefined || value === "")
     return null;
@@ -33,11 +35,16 @@ function toNumber(value) {
 
 function toDate(value) {
   const number = toNumber(value);
+  console.log(value);
 
   if (number === null)
     return null;
 
   return new Date(number * 1000);
+}
+
+function getWibTimestamp() {
+  return new Date(Date.now() + wibOffsetMs);
 }
 
 function normalizeRows(data) {
@@ -70,6 +77,7 @@ function calculateAverage(data) {
     return result;
   }, {
     machine_id: null,
+    timestamp: getWibTimestamp(),
   });
 }
 
