@@ -1,27 +1,24 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
-export const MachineTable = sequelize.define("machine", {
+export const LogTable = sequelize.define("log", {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
-  unit: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
+  time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
   },
-  company: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  total_time: {
-    type: DataTypes.INTEGER,
+  message: {
+    type: DataTypes.TEXT,
     allowNull: true,
   },
 }, {
-  tableName: "machine",
+  tableName: "log",
   timestamps: false,
   freezeTableName: true,
 });

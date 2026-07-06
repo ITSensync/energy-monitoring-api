@@ -40,15 +40,11 @@ export const AverageTable = sequelize.define("average", {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  watt1: {
+  vibration: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  watt2: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-  },
-  watt3: {
+  energy: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },

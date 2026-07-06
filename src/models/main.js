@@ -40,18 +40,14 @@ export const MainTable = sequelize.define("main", {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  watt1: {
+  energy: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  watt2: {
+  vibration: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
-  },
-  watt3: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-  },
+  }
 }, {
   tableName: "main",
   timestamps: false,

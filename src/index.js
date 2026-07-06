@@ -4,6 +4,7 @@ import app from "./app.js";
 import { testConnection } from "./config/db.js";
 // import { env } from "./env.js";
 import { AverageTable } from "./models/average.js";
+import { LogTable } from "./models/log.js";
 import { MachineTable } from "./models/machine.js";
 import { MainTable } from "./models/main.js";
 import "./models/associations.js";
@@ -15,6 +16,7 @@ async function startServer() {
   await MachineTable.sync({ alter: true });
   await MainTable.sync({ alter: true });
   await AverageTable.sync({ alter: true });
+  await LogTable.sync({ alter: true });
 
   const server = app.listen(process.env.PORT, () => {
     /* eslint-disable no-console */
