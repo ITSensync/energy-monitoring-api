@@ -7,6 +7,7 @@ import { AverageTable } from "./models/average.js";
 import { LogTable } from "./models/log.js";
 import { MachineTable } from "./models/machine.js";
 import { MainTable } from "./models/main.js";
+import { RuntimeTable } from "./models/runtime.js";
 import "./models/associations.js";
 
 dotenv.config();
@@ -17,6 +18,7 @@ async function startServer() {
   await MainTable.sync({ alter: true });
   await AverageTable.sync({ alter: true });
   await LogTable.sync({ alter: true });
+  await RuntimeTable.sync({ alter: true }); ;
 
   const server = app.listen(process.env.PORT, () => {
     /* eslint-disable no-console */

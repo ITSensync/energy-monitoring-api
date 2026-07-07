@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 import { MachineTable } from "./machine.js";
 
-export const LogTable = sequelize.define("log", {
+export const RuntimeTable = sequelize.define("runtime", {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
@@ -19,17 +19,17 @@ export const LogTable = sequelize.define("log", {
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
     },
-  time: {
-    type: DataTypes.DATE,
+  date: {
+    type: DataTypes.DATEONLY,
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
-  message: {
-    type: DataTypes.TEXT,
+  minute: {
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
   },
 }, {
-  tableName: "log",
+  tableName: "runtime",
   timestamps: false,
   freezeTableName: true,
 });

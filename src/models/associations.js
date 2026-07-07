@@ -2,6 +2,7 @@ import { AverageTable } from "./average.js";
 import { LogTable } from "./log.js";
 import { MachineTable } from "./machine.js";
 import { MainTable } from "./main.js";
+import { RuntimeTable } from "./runtime.js";
 
 MachineTable.hasMany(MainTable, {
   foreignKey: "machine_id",
@@ -25,10 +26,20 @@ AverageTable.belongsTo(MachineTable, {
 
 MachineTable.hasMany(LogTable, {
   foreignKey: "machine_id",
-  as: "logs"
-})
+  as: "logs",
+});
 
 LogTable.belongsTo(MachineTable, {
   foreignKey: "machine_id",
   as: "machine",
-})
+});
+
+MachineTable.hasMany(RuntimeTable, {
+  foreignKey: "machine_id",
+  as: "runtimes",
+});
+
+RuntimeTable.belongsTo(MachineTable, {
+  foreignKey: "machine_id",
+  as: "machine",
+});
