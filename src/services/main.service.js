@@ -1,15 +1,14 @@
 import Papa from "papaparse";
-import { AverageTable } from "../models/average.js";
 import { MainTable } from "../models/main.js";
+import averageService from "./average.service.js";
 
 const averageFields = [
   "volt",
   "current1",
   "current2",
   "current3",
-  "watt1",
-  "watt2",
-  "watt3",
+  "energy",
+  "vibration",
 ];
 
 const wibOffsetMs = 7 * 60 * 60 * 1000;
@@ -42,9 +41,8 @@ function prepareRows(data) {
     current1: toNumber(row.current1),
     current2: toNumber(row.current2),
     current3: toNumber(row.current3),
-    watt1: toNumber(row.watt1),
-    watt2: toNumber(row.watt2),
-    watt3: toNumber(row.watt3),
+    energy: toNumber(row.energy),
+    vibration: toNumber(row.vibration),
   }));
 }
 
@@ -91,7 +89,10 @@ async function processCsv(csvString, successMessage, errorMessage) {
     await MainTable.bulkCreate(preparedData);
 
     const averageData = calculateAverage(preparedData);
-    const average = await AverageTable.create(averageData);
+    const average = await averageService.insert(averageData);
+    if (average.status !== 200) {
+      throw new Error(average);
+    }
 
     return {
       status: 200,
